@@ -12,7 +12,7 @@ See more at the [Dart Packages page.](https://pub.dartlang.org/packages/new_vers
 Add new_version as [a dependency in your `pubspec.yaml` file.](https://flutter.io/using-packages/)
 ```
 dependencies:
-  new_version: ^0.2.0
+  new_version: ^0.2.1
 ```
 
 ## Usage
