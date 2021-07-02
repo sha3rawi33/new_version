@@ -2,7 +2,8 @@ library new_version;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform;
+import 'dart:io';
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -174,20 +175,20 @@ class NewVersion {
   void showUpdateDialog({
     required BuildContext context,
     required VersionStatus versionStatus,
-    String dialogTitle = 'Update Available',
+    String dialogTitle = 'يوجد اصدار جديد!',
     String? dialogText,
-    String updateButtonText = 'Update',
+    String updateButtonText = 'تحديث',
     bool allowDismissal = true,
-    String dismissButtonText = 'Maybe Later',
+    String dismissButtonText = 'ليس الآن',
     VoidCallback? dismissAction,
   }) async {
-    final dialogTitleWidget = Text(dialogTitle);
+    final dialogTitleWidget = Text(dialogTitle, textDirection: TextDirection.rtl);
     final dialogTextWidget = Text(
       dialogText ??
-          'You can now update this app from ${versionStatus.localVersion} to ${versionStatus.storeVersion}',
-    );
+          'يمكنك الان تحديث هذا البرنامج من الاصدار ${versionStatus.localVersion} الى الاصدار ${versionStatus.storeVersion}\n الجديد:\n${versionStatus.releaseNotes}',
+      textDirection: TextDirection.rtl,);
 
-    final updateButtonTextWidget = Text(updateButtonText);
+    final updateButtonTextWidget = Text(updateButtonText, textDirection: TextDirection.rtl);
     final updateAction = () {
       _launchAppStore(versionStatus.appStoreLink);
       if (allowDismissal) {
@@ -206,11 +207,9 @@ class NewVersion {
               onPressed: updateAction,
             ),
     ];
-
+    final dismissButtonTextWidget = Text(updateButtonText, textDirection: TextDirection.rtl);
     if (allowDismissal) {
-      final dismissButtonTextWidget = Text(dismissButtonText);
-      dismissAction = dismissAction ??
-          () => Navigator.of(context, rootNavigator: true).pop();
+      dismissAction = dismissAction ?? () => exit(0);
       actions.add(
         Platform.isAndroid
             ? TextButton(
@@ -226,21 +225,25 @@ class NewVersion {
 
     showDialog(
       context: context,
-      barrierDismissible: allowDismissal,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return WillPopScope(
-            child: Platform.isAndroid
-                ? AlertDialog(
-                    title: dialogTitleWidget,
-                    content: dialogTextWidget,
-                    actions: actions,
-                  )
-                : CupertinoAlertDialog(
-                    title: dialogTitleWidget,
-                    content: dialogTextWidget,
-                    actions: actions,
-                  ),
-            onWillPop: () => Future.value(allowDismissal));
+          onWillPop: () async => false,
+          child: AlertDialog(
+            title: dialogTitleWidget,
+            content: dialogTextWidget,
+            actions: <Widget>[
+              TextButton(
+                child: Text(dismissButtonText, textDirection: TextDirection.rtl),
+                onPressed: dismissAction,
+              ),
+              TextButton(
+                child: updateButtonTextWidget,
+                onPressed: updateAction,
+              ),
+            ],
+          ),
+        );
       },
     );
   }
