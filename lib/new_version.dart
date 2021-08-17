@@ -85,10 +85,10 @@ class NewVersion {
 
   /// This checks the version status, then displays a platform-specific alert
   /// with buttons to dismiss the update alert, or go to the app store.
-  showAlertIfNecessary({required BuildContext context}) async {
+  showAlertIfNecessary({required BuildContext context, required bool isDismissable}) async {
     final VersionStatus? versionStatus = await getVersionStatus();
     if (versionStatus != null && versionStatus.canUpdate) {
-      showUpdateDialog(context: context, versionStatus: versionStatus);
+      showUpdateDialog(context: context, versionStatus: versionStatus, allowDismissal: isDismissable);
     }
   }
 
@@ -178,7 +178,7 @@ class NewVersion {
     String dialogTitle = 'يوجد اصدار جديد!',
     String? dialogText,
     String updateButtonText = 'تحديث',
-    bool allowDismissal = true,
+    bool allowDismissal = false,
     String dismissButtonText = 'ليس الآن',
     VoidCallback? dismissAction,
   }) async {
